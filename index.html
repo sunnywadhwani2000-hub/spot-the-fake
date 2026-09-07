@@ -37,6 +37,31 @@
     justify-content:center;
     padding: 40px 16px 80px;
   }
+  /* Dark mode override — toggled via Settings, not tied to system preference */
+  body[data-theme="dark"]{
+    --paper: #17140F;
+    --paper-dim: #241F17;
+    --ink: #EEE8DA;
+    --ink-soft: #B4AB98;
+    --rule: #3A3327;
+    --alarm: #E2694A;
+    --alarm-soft: #3A251D;
+    --ok: #6FAE7C;
+    --ok-soft: #1F2E22;
+  }
+  /* Colorblind-safe palette — swaps green/red for blue/orange */
+  body[data-cb="1"]{
+    --ok: #2F6FB0;
+    --ok-soft: #D8E6F3;
+    --alarm: #B0722F;
+    --alarm-soft: #F3E6D8;
+  }
+  body[data-theme="dark"][data-cb="1"]{
+    --ok: #6FA8DC;
+    --ok-soft: #1C2A36;
+    --alarm: #D9A24A;
+    --alarm-soft: #34271A;
+  }
   .wrap{ width: 100%; max-width: 640px; }
   header{
     position: relative;
@@ -44,7 +69,7 @@
     margin-bottom: 28px;
     border-bottom: 2px solid var(--ink);
     padding-bottom: 18px;
-    padding-right: 36px;
+    padding-right: 76px;
   }
   .masthead{
     font-family: 'Source Serif 4', serif;
@@ -63,9 +88,23 @@
     color: var(--ink-soft);
   }
   .streak{ font-variant-numeric: tabular-nums; font-weight: 600; }
-  .info-btn{
+  .archive-row{ margin-top: 8px; }
+  .link-btn{
+    background:none;
+    border:none;
+    padding:0;
+    font-family:'Inter', sans-serif;
+    font-size:12.5px;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset:2px;
+    cursor:pointer;
+  }
+  .link-btn:hover{ color: var(--ink); }
+  .back-link{ display:inline-block; margin-bottom:14px; }
+  .info-btn, .settings-btn{
     position:absolute;
-    top:0; right:0;
+    top:0;
     width:28px; height:28px;
     border-radius:50%;
     border:1px solid var(--rule);
@@ -77,8 +116,10 @@
     cursor:pointer;
     display:flex; align-items:center; justify-content:center;
   }
-  .info-btn:hover{ border-color: var(--ink); color: var(--ink); }
-  .info-btn:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; }
+  .info-btn{ right:0; }
+  .settings-btn{ right:38px; font-size:15px; }
+  .info-btn:hover, .settings-btn:hover{ border-color: var(--ink); color: var(--ink); }
+  .info-btn:focus-visible, .settings-btn:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; }
   .prompt{
     font-family: 'Source Serif 4', serif;
     font-size: 15px;
@@ -193,7 +234,23 @@
     padding-top: 16px;
   }
 
-  /* How-to-play modal */
+  /* Archive list */
+  .archive-list{ display:flex; flex-direction:column; gap:8px; }
+  .archive-item{
+    display:flex;
+    justify-content:space-between;
+    padding:12px 16px;
+    background: var(--paper-dim);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .archive-item:hover{ border-color: var(--ink); }
+
+  /* Modals (how-to-play + settings share this) */
   .modal-backdrop{
     position: fixed; inset: 0;
     background: rgba(28,26,21,0.55);
@@ -247,6 +304,62 @@
     from{ opacity: 0; transform: translateY(6px); }
     to{ opacity: 1; transform: translateY(0); }
   }
+
+  /* Settings rows + toggle switches */
+  .settings-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+    border-bottom:1px solid var(--rule);
+    font-size:14.5px;
+  }
+  .settings-row:last-child{ border-bottom:none; }
+  .toggle{
+    width:42px; height:24px;
+    border-radius:20px;
+    border:1px solid var(--rule);
+    background:var(--paper-dim);
+    position:relative;
+    cursor:pointer;
+    padding:0;
+    flex:none;
+  }
+  .toggle::after{
+    content:'';
+    position:absolute;
+    top:2px; left:2px;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:var(--ink-soft);
+    transition:transform 0.15s ease;
+  }
+  .toggle[aria-checked="true"]{ background:var(--ink); border-color:var(--ink); }
+  .toggle[aria-checked="true"]::after{ transform:translateX(18px); background:var(--paper); }
+
+  /* Streak milestone toast */
+  .milestone-toast{
+    position: fixed;
+    left:50%;
+    top:20px;
+    transform: translateX(-50%) translateY(-16px);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    font-weight:600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 200;
+    opacity:0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events:none;
+  }
+  .milestone-toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .milestone-toast{ transition:none; }
+  }
 </style>
 </head>
 <body>
@@ -257,6 +370,10 @@
       <span id="puzzleLabel">Loading puzzle…</span>
       <span class="streak" id="streakLabel"></span>
     </div>
+    <div class="archive-row">
+      <button class="link-btn" id="archiveBtn">Browse past puzzles</button>
+    </div>
+    <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙</button>
     <button class="info-btn" id="infoBtn" aria-label="How to play" title="How to play">?</button>
   </header>
   <div id="app">
@@ -280,6 +397,21 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="settingsBackdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <button class="modal-close" id="settingsCloseX" aria-label="Close">&times;</button>
+    <h2 id="settingsTitle">Settings</h2>
+    <div class="settings-row">
+      <span>Dark mode</span>
+      <button class="toggle" id="darkModeToggle" role="switch" aria-checked="false" aria-label="Toggle dark mode"></button>
+    </div>
+    <div class="settings-row">
+      <span>Colorblind-safe colors</span>
+      <button class="toggle" id="cbModeToggle" role="switch" aria-checked="false" aria-label="Toggle colorblind-safe colors"></button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // CONFIG
@@ -291,6 +423,9 @@ const SITE_URL = "spotthefake.org";
 // ============================================================
 const params = new URLSearchParams(window.location.search);
 const requestedDate = params.get('date') || todayStr();
+let cachedHeader = null;
+let cachedRows = null;
+
 function todayStr(){
   const d = new Date();
   return d.toISOString().slice(0,10);
@@ -308,6 +443,38 @@ function getStats(){
 }
 function saveStats(stats){
   localStorage.setItem('spotthefake_stats', JSON.stringify(stats));
+}
+function backToTodayHtml(){
+  return requestedDate !== todayStr()
+    ? `<a class="link-btn back-link" href="?">← Back to today</a>`
+    : '';
+}
+function doShare(text, btnEl){
+  if (navigator.share){
+    navigator.share({ text }).catch(() => {});
+    return;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btnEl.textContent;
+    btnEl.textContent = 'Copied!';
+    setTimeout(() => { btnEl.textContent = original; }, 1500);
+  });
+}
+function maybeShowMilestone(streak){
+  const milestones = [7, 30, 100];
+  if (!milestones.includes(streak)) return;
+  const seenKey = `spotthefake_milestone_${streak}`;
+  if (localStorage.getItem(seenKey)) return;
+  localStorage.setItem(seenKey, '1');
+  const toast = document.createElement('div');
+  toast.className = 'milestone-toast';
+  toast.textContent = `🔥 ${streak}-day streak!`;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
 }
 function parseCSV(text){
   const rows = [];
@@ -341,10 +508,12 @@ async function loadPuzzle(){
     const text = await res.text();
     const rows = parseCSV(text);
     const header = rows[0].map(h => h.trim().toLowerCase());
+    cachedHeader = header;
+    cachedRows = rows.slice(1);
     const dateIdx = header.indexOf('date');
-    const dataRows = rows.slice(1).filter(r => r[dateIdx] === requestedDate);
+    const dataRows = cachedRows.filter(r => r[dateIdx] === requestedDate);
     if (!dataRows.length){
-      app.innerHTML = `<div class="error">No puzzle found for ${requestedDate} yet. Check back after this morning's email.</div>`;
+      app.innerHTML = `${backToTodayHtml()}<div class="error">No puzzle found for ${requestedDate} yet. Check back after this morning's email.</div>`;
       return;
     }
     const r = dataRows[0];
@@ -370,13 +539,14 @@ function renderGame(headlines, fakeIndex, explanation){
     return;
   }
   app.innerHTML = `
+    ${backToTodayHtml()}
     <p class="prompt">Five headlines. One never happened. Pick the fake.</p>
     <div id="game"></div>
     <div class="result" id="result">
       <h3 id="resultTitle"></h3>
       <p id="resultBody"></p>
       <div class="actions">
-        <button class="share" id="shareBtn">Copy result to share</button>
+        <button class="share" id="shareBtn">Share result</button>
       </div>
     </div>
   `;
@@ -416,6 +586,7 @@ function handleGuess(i, btnEl, headlines, fakeIndex, explanation, stats){
   stats.lastPlayedDate = requestedDate;
   saveStats(stats);
   updateStreakLabel(stats);
+  if (isCorrect) maybeShowMilestone(stats.streak);
   localStorage.setItem(storageKey(requestedDate), JSON.stringify({ picked: i, correct: isCorrect }));
   document.getElementById('shareBtn').addEventListener('click', () => {
     shareResult(i, fakeIndex, headlines.length, stats);
@@ -433,12 +604,7 @@ function shareResult(picked, fakeIndex, total, stats){
     else squares += '⬛';
   }
   const text = `Spot the Fake #${num}\n${squares}\nStreak: ${stats.streak}\n${SITE_URL}`;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('shareBtn');
-    const original = btn.textContent;
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = original; }, 1500);
-  });
+  doShare(text, document.getElementById('shareBtn'));
 }
 function nextPuzzleCountdown(){
   const now = new Date();
@@ -453,6 +619,7 @@ function nextPuzzleCountdown(){
 function showAlreadyPlayed(result, stats){
   const app = document.getElementById('app');
   app.innerHTML = `
+    ${backToTodayHtml()}
     <div class="already-played">
       <p>${result.correct ? "You caught it." : "It got past you."}</p>
       <div class="score">${result.correct ? '✅' : '❌'}</div>
@@ -461,23 +628,59 @@ function showAlreadyPlayed(result, stats){
         <div class="streak-stat"><span class="num">${stats.played}</span><span class="lbl">played</span></div>
         <div class="streak-stat"><span class="num">${stats.played ? Math.round(100*stats.correct/stats.played) : 0}%</span><span class="lbl">accuracy</span></div>
       </div>
-      <button class="share" id="shareBtnAgain">Copy result to share</button>
-      <div class="countdown" id="countdown">Next puzzle in ${nextPuzzleCountdown()}</div>
+      <button class="share" id="shareBtnAgain">Share result</button>
+      ${requestedDate === todayStr() ? `<div class="countdown" id="countdown">Next puzzle in ${nextPuzzleCountdown()}</div>` : ''}
     </div>
   `;
   document.getElementById('shareBtnAgain').addEventListener('click', () => {
     const num = puzzleNumber(requestedDate);
     const text = `Spot the Fake #${num}\n${result.correct ? '🟩' : '🟥'}\nStreak: ${stats.streak}\n${SITE_URL}`;
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.getElementById('shareBtnAgain');
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = 'Copy result to share'; }, 1500);
-    });
+    doShare(text, document.getElementById('shareBtnAgain'));
   });
   const countdownEl = document.getElementById('countdown');
-  setInterval(() => {
-    if (countdownEl) countdownEl.textContent = `Next puzzle in ${nextPuzzleCountdown()}`;
-  }, 1000);
+  if (countdownEl){
+    setInterval(() => {
+      countdownEl.textContent = `Next puzzle in ${nextPuzzleCountdown()}`;
+    }, 1000);
+  }
+}
+async function showArchivePicker(){
+  const app = document.getElementById('app');
+  if (!cachedRows){
+    app.innerHTML = `<div class="loading">Loading archive…</div>`;
+    try {
+      const res = await fetch(SHEET_CSV_URL);
+      const text = await res.text();
+      const rows = parseCSV(text);
+      cachedHeader = rows[0].map(h => h.trim().toLowerCase());
+      cachedRows = rows.slice(1);
+    } catch (e){
+      app.innerHTML = `<div class="error">Couldn't load the archive.</div>`;
+      return;
+    }
+  }
+  const dateIdx = cachedHeader.indexOf('date');
+  const today = todayStr();
+  const dates = cachedRows
+    .map(r => r[dateIdx])
+    .filter(d => d && d <= today)
+    .sort()
+    .reverse();
+  const items = dates.map(d => {
+    const num = puzzleNumber(d);
+    const played = localStorage.getItem(storageKey(d));
+    let status = '';
+    if (played){
+      const r = JSON.parse(played);
+      status = r.correct ? '✅' : '❌';
+    }
+    return `<a class="archive-item" href="?date=${d}"><span>#${num} · ${d}</span><span>${status}</span></a>`;
+  }).join('');
+  app.innerHTML = `
+    <a class="link-btn back-link" href="?">← Back to today</a>
+    <p class="prompt">Past puzzles. Pick a day.</p>
+    <div class="archive-list">${items || '<p class="loading">No past puzzles yet.</p>'}</div>
+  `;
 }
 function initHowTo(){
   const backdrop = document.getElementById('howToBackdrop');
@@ -493,7 +696,52 @@ function initHowTo(){
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !backdrop.hidden) close(); });
   if (!localStorage.getItem('spotthefake_seenHowTo')) open();
 }
+function initSettings(){
+  const backdrop = document.getElementById('settingsBackdrop');
+  const closeX = document.getElementById('settingsCloseX');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const darkToggle = document.getElementById('darkModeToggle');
+  const cbToggle = document.getElementById('cbModeToggle');
+
+  function applyDark(on){
+    if (on) document.body.setAttribute('data-theme', 'dark');
+    else document.body.removeAttribute('data-theme');
+  }
+  function applyCb(on){
+    if (on) document.body.setAttribute('data-cb', '1');
+    else document.body.removeAttribute('data-cb');
+  }
+
+  const darkOn = localStorage.getItem('spotthefake_dark') === '1';
+  const cbOn = localStorage.getItem('spotthefake_cb') === '1';
+  applyDark(darkOn);
+  applyCb(cbOn);
+  darkToggle.setAttribute('aria-checked', String(darkOn));
+  cbToggle.setAttribute('aria-checked', String(cbOn));
+
+  function open(){ backdrop.hidden = false; }
+  function close(){ backdrop.hidden = true; }
+  settingsBtn.addEventListener('click', open);
+  closeX.addEventListener('click', close);
+  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !backdrop.hidden) close(); });
+
+  darkToggle.addEventListener('click', () => {
+    const now = darkToggle.getAttribute('aria-checked') !== 'true';
+    darkToggle.setAttribute('aria-checked', String(now));
+    localStorage.setItem('spotthefake_dark', now ? '1' : '0');
+    applyDark(now);
+  });
+  cbToggle.addEventListener('click', () => {
+    const now = cbToggle.getAttribute('aria-checked') !== 'true';
+    cbToggle.setAttribute('aria-checked', String(now));
+    localStorage.setItem('spotthefake_cb', now ? '1' : '0');
+    applyCb(now);
+  });
+}
+document.getElementById('archiveBtn').addEventListener('click', showArchivePicker);
 initHowTo();
+initSettings();
 loadPuzzle();
 </script>
 </body>
