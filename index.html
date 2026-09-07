@@ -4,9 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spot the Fake</title>
+<meta name="description" content="Five headlines. Four are real. One never happened. A new daily puzzle every morning.">
+<meta property="og:title" content="Spot the Fake">
+<meta property="og:description" content="Five headlines. Four are real. One never happened. Can you spot it?">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://spotthefake.org">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spot the Fake">
+<meta name="twitter:description" content="Five headlines. Four are real. One never happened. Can you spot it?">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23F2EEE4'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' font-family='Georgia,serif' fill='%23B23A1E'%3E%3F%3C/text%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&display=swap');
-
   :root{
     --paper: #F2EEE4;
     --paper-dim: #E7E1D2;
@@ -18,9 +26,7 @@
     --ok: #3F6B4A;
     --ok-soft: #D8E4D3;
   }
-
   *{ box-sizing: border-box; }
-
   body{
     margin:0;
     background: var(--paper);
@@ -31,16 +37,15 @@
     justify-content:center;
     padding: 40px 16px 80px;
   }
-
   .wrap{ width: 100%; max-width: 640px; }
-
   header{
+    position: relative;
     text-align:left;
     margin-bottom: 28px;
     border-bottom: 2px solid var(--ink);
     padding-bottom: 18px;
+    padding-right: 36px;
   }
-
   .masthead{
     font-family: 'Source Serif 4', serif;
     font-weight: 700;
@@ -48,9 +53,7 @@
     letter-spacing: -0.01em;
     margin: 0;
   }
-
   .masthead em{ font-style: italic; color: var(--alarm); }
-
   .dateline{
     display:flex;
     justify-content: space-between;
@@ -59,9 +62,23 @@
     font-size: 13px;
     color: var(--ink-soft);
   }
-
   .streak{ font-variant-numeric: tabular-nums; font-weight: 600; }
-
+  .info-btn{
+    position:absolute;
+    top:0; right:0;
+    width:28px; height:28px;
+    border-radius:50%;
+    border:1px solid var(--rule);
+    background:var(--paper-dim);
+    color:var(--ink-soft);
+    font-family:'Source Serif 4', serif;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .info-btn:hover{ border-color: var(--ink); color: var(--ink); }
+  .info-btn:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; }
   .prompt{
     font-family: 'Source Serif 4', serif;
     font-size: 15px;
@@ -69,7 +86,6 @@
     margin: 0 0 20px;
     line-height: 1.5;
   }
-
   .headline-btn{
     display:block;
     width: 100%;
@@ -86,11 +102,9 @@
     cursor: pointer;
     transition: border-color 0.15s ease, transform 0.1s ease;
   }
-
   .headline-btn:hover:not(:disabled){ border-color: var(--ink); transform: translateX(2px); }
   .headline-btn:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; }
   .headline-btn:disabled{ cursor: default; }
-
   .headline-btn .tag{
     display:inline-block;
     font-family: 'Inter', sans-serif;
@@ -100,12 +114,10 @@
     border-radius: 2px;
     margin-top: 10px;
   }
-
   .headline-btn.correct{ background: var(--ok-soft); border-color: var(--ok); }
   .headline-btn.correct .tag{ background: var(--ok); color: var(--paper); }
   .headline-btn.wrong-pick{ background: var(--alarm-soft); border-color: var(--alarm); }
   .headline-btn.wrong-pick .tag{ background: var(--alarm); color: var(--paper); }
-
   .result{
     margin-top: 22px;
     padding: 18px 20px;
@@ -117,11 +129,8 @@
   .result.show{ display:block; }
   .result.win{ background: var(--ok-soft); border: 1px solid var(--ok); }
   .result.lose{ background: var(--alarm-soft); border: 1px solid var(--alarm); }
-
   .result h3{ margin: 0 0 6px; font-family: 'Source Serif 4', serif; font-size: 17px; }
-
   .actions{ margin-top: 18px; display:flex; gap: 10px; flex-wrap: wrap; }
-
   button.share, button.next{
     font-family: 'Inter', sans-serif;
     font-weight: 600;
@@ -135,7 +144,6 @@
   }
   button.share{ background: transparent; color: var(--ink); border: 1px solid var(--ink); }
   button.share:hover, button.next:hover{ opacity: 0.85; }
-
   .already-played{
     text-align:center;
     padding: 50px 20px;
@@ -147,7 +155,12 @@
     margin: 10px 0;
   }
   .already-played p{ color: var(--ink-soft); font-size: 14px; }
-
+  .countdown{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    font-variant-numeric: tabular-nums;
+  }
   .streak-box{
     display:flex;
     gap: 14px;
@@ -165,14 +178,12 @@
     display:block;
   }
   .streak-stat .lbl{ font-size: 11px; color: var(--ink-soft); text-transform: none; }
-
   .loading, .error{
     padding: 40px 20px;
     text-align: center;
     color: var(--ink-soft);
     font-size: 14px;
   }
-
   footer{
     margin-top: 40px;
     font-size: 12px;
@@ -180,6 +191,61 @@
     line-height: 1.6;
     border-top: 1px solid var(--rule);
     padding-top: 16px;
+  }
+
+  /* How-to-play modal */
+  .modal-backdrop{
+    position: fixed; inset: 0;
+    background: rgba(28,26,21,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal-backdrop[hidden]{ display: none; }
+  .modal{
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 30px 26px 26px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .modal h2{
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    margin: 0 0 16px;
+  }
+  .howto-list{
+    margin: 0 0 22px;
+    padding-left: 20px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .howto-list li{ margin-bottom: 9px; }
+  .howto-list li:last-child{ margin-bottom: 0; }
+  .howto-list strong{ color: var(--ink); }
+  .modal-close{
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 28px; height: 28px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .modal-close:hover{ color: var(--ink); }
+  .modal button.next{ width: 100%; text-align: center; }
+  @media (prefers-reduced-motion: no-preference){
+    .modal{ animation: modal-in 0.15s ease-out; }
+  }
+  @keyframes modal-in{
+    from{ opacity: 0; transform: translateY(6px); }
+    to{ opacity: 1; transform: translateY(0); }
   }
 </style>
 </head>
@@ -191,59 +257,59 @@
       <span id="puzzleLabel">Loading puzzle…</span>
       <span class="streak" id="streakLabel"></span>
     </div>
+    <button class="info-btn" id="infoBtn" aria-label="How to play" title="How to play">?</button>
   </header>
-
   <div id="app">
     <div class="loading">Fetching today's headlines…</div>
   </div>
-
   <footer>
     A new set every day. Everyone gets the same five headlines.
   </footer>
 </div>
 
+<div class="modal-backdrop" id="howToBackdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="howToTitle">
+    <button class="modal-close" id="howToCloseX" aria-label="Close">&times;</button>
+    <h2 id="howToTitle">How to play</h2>
+    <ol class="howto-list">
+      <li><strong>Four headlines are real</strong> — genuine news from the last day or two.</li>
+      <li><strong>One is invented</strong> — written to blend right in.</li>
+      <li>Pick the fake. <strong>One guess</strong>, once a day. A new set posts every morning.</li>
+    </ol>
+    <button class="next" id="howToGotIt">Got it</button>
+  </div>
+</div>
+
 <script>
 // ============================================================
-// CONFIG — fill these in once your Sheet + hosting are live
+// CONFIG
 // ============================================================
-// 1. Create a Google Sheet with columns: date, h1, h2, h3, h4, h5, fakeIndex, explanation
-//    (fakeIndex is 0-4, matching which of h1-h5 is fake)
-// 2. File > Share > Publish to web > select the sheet > CSV format > copy the URL
-// 3. Paste that CSV URL below.
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRj0Br9neGvvvJ00HmJMGZziwkFb0u07rNHX10dZnKjscbYpSdMqtWSRp5sr0I0BdmfkOt5YWV011ty/pub?gid=0&single=true&output=csv";
-
-// The date your first puzzle goes live, used to compute puzzle numbers (#1, #2, ...)
-const LAUNCH_DATE = "2026-09-08";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeCAj9Lc5fdjwEfQoLkPSkwnAu4Q1cKFEnkwmpdW1e0P1YAGGHwYCCKok3vBvt-tM4Oxc2q6HkSRRu/pub?output=csv";
+// The date your first puzzle went live, used to compute puzzle numbers (#1, #2, ...)
+const LAUNCH_DATE = "2026-09-07";
+const SITE_URL = "spotthefake.org";
 // ============================================================
-
 const params = new URLSearchParams(window.location.search);
 const requestedDate = params.get('date') || todayStr();
-
 function todayStr(){
   const d = new Date();
   return d.toISOString().slice(0,10);
 }
-
 function puzzleNumber(dateStr){
   const start = new Date(LAUNCH_DATE);
   const cur = new Date(dateStr);
   const diff = Math.round((cur - start) / 86400000) + 1;
   return diff > 0 ? diff : 1;
 }
-
 function storageKey(dateStr){ return `spotthefake_${dateStr}`; }
-
 function getStats(){
   const raw = localStorage.getItem('spotthefake_stats');
   return raw ? JSON.parse(raw) : { streak: 0, played: 0, correct: 0, lastPlayedDate: null };
 }
-
 function saveStats(stats){
   localStorage.setItem('spotthefake_stats', JSON.stringify(stats));
 }
-
 function parseCSV(text){
-  // simple CSV parser, handles quoted fields with commas
   const rows = [];
   let row = [], field = '', inQuotes = false;
   for (let i = 0; i < text.length; i++){
@@ -263,16 +329,13 @@ function parseCSV(text){
   if (field.length || row.length){ row.push(field); rows.push(row); }
   return rows;
 }
-
 async function loadPuzzle(){
   const app = document.getElementById('app');
   const label = document.getElementById('puzzleLabel');
-
-  if (SHEET_CSV_URL.includes('PASTE_YOUR')){
+  if (SHEET_CSV_URL.includes('REPLACE_WITH')){
     app.innerHTML = `<div class="error">No puzzle source configured yet — paste your published Google Sheet CSV URL into SHEET_CSV_URL at the top of the script.</div>`;
     return;
   }
-
   try {
     const res = await fetch(SHEET_CSV_URL);
     const text = await res.text();
@@ -280,39 +343,32 @@ async function loadPuzzle(){
     const header = rows[0].map(h => h.trim().toLowerCase());
     const dateIdx = header.indexOf('date');
     const dataRows = rows.slice(1).filter(r => r[dateIdx] === requestedDate);
-
     if (!dataRows.length){
       app.innerHTML = `<div class="error">No puzzle found for ${requestedDate} yet. Check back after this morning's email.</div>`;
       return;
     }
-
     const r = dataRows[0];
     const idx = name => header.indexOf(name);
     const headlines = [r[idx('h1')], r[idx('h2')], r[idx('h3')], r[idx('h4')], r[idx('h5')]];
     const fakeIndex = parseInt(r[idx('fakeindex')], 10);
     const explanation = r[idx('explanation')];
-
     label.textContent = `Spot the Fake #${puzzleNumber(requestedDate)}`;
     renderGame(headlines, fakeIndex, explanation);
   } catch (e){
     app.innerHTML = `<div class="error">Couldn't load today's puzzle. Check the sheet is published and the URL is correct.</div>`;
   }
 }
-
 function renderGame(headlines, fakeIndex, explanation){
   const app = document.getElementById('app');
   const stats = getStats();
   const key = storageKey(requestedDate);
   const already = localStorage.getItem(key);
-
   updateStreakLabel(stats);
-
   if (already){
     const result = JSON.parse(already);
     showAlreadyPlayed(result, stats);
     return;
   }
-
   app.innerHTML = `
     <p class="prompt">Five headlines. One never happened. Pick the fake.</p>
     <div id="game"></div>
@@ -324,7 +380,6 @@ function renderGame(headlines, fakeIndex, explanation){
       </div>
     </div>
   `;
-
   const gameEl = document.getElementById('game');
   headlines.forEach((text, i) => {
     const btn = document.createElement('button');
@@ -334,19 +389,15 @@ function renderGame(headlines, fakeIndex, explanation){
     gameEl.appendChild(btn);
   });
 }
-
 function handleGuess(i, btnEl, headlines, fakeIndex, explanation, stats){
   const buttons = document.querySelectorAll('.headline-btn');
   buttons.forEach(b => b.disabled = true);
-
   const isCorrect = i === fakeIndex;
-
   buttons[fakeIndex].classList.add(isCorrect ? 'correct' : 'wrong-pick');
   const tag = document.createElement('span');
   tag.className = 'tag';
   tag.textContent = 'THE FAKE';
   buttons[fakeIndex].appendChild(tag);
-
   if (!isCorrect){
     const wrongTag = document.createElement('span');
     wrongTag.className = 'tag';
@@ -355,31 +406,24 @@ function handleGuess(i, btnEl, headlines, fakeIndex, explanation, stats){
     wrongTag.textContent = 'YOUR PICK — ACTUALLY REAL';
     btnEl.appendChild(wrongTag);
   }
-
   const resultEl = document.getElementById('result');
   resultEl.classList.add('show', isCorrect ? 'win' : 'lose');
   document.getElementById('resultTitle').textContent = isCorrect ? 'Nice catch.' : 'That one was real.';
   document.getElementById('resultBody').textContent = explanation;
-
-  // update stats
   stats.played += 1;
   if (isCorrect){ stats.correct += 1; stats.streak += 1; }
   else { stats.streak = 0; }
   stats.lastPlayedDate = requestedDate;
   saveStats(stats);
   updateStreakLabel(stats);
-
   localStorage.setItem(storageKey(requestedDate), JSON.stringify({ picked: i, correct: isCorrect }));
-
   document.getElementById('shareBtn').addEventListener('click', () => {
     shareResult(i, fakeIndex, headlines.length, stats);
   });
 }
-
 function updateStreakLabel(stats){
   document.getElementById('streakLabel').textContent = `Streak: ${stats.streak}`;
 }
-
 function shareResult(picked, fakeIndex, total, stats){
   const num = puzzleNumber(requestedDate);
   let squares = '';
@@ -388,7 +432,7 @@ function shareResult(picked, fakeIndex, total, stats){
     else if (i === picked) squares += '🟥';
     else squares += '⬛';
   }
-  const text = `Spot the Fake #${num}\n${squares}\nStreak: ${stats.streak}\nspotthefake.game`;
+  const text = `Spot the Fake #${num}\n${squares}\nStreak: ${stats.streak}\n${SITE_URL}`;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('shareBtn');
     const original = btn.textContent;
@@ -396,7 +440,16 @@ function shareResult(picked, fakeIndex, total, stats){
     setTimeout(() => { btn.textContent = original; }, 1500);
   });
 }
-
+function nextPuzzleCountdown(){
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24,0,0,0);
+  const diff = midnight - now;
+  const h = String(Math.floor(diff / 3600000)).padStart(2,'0');
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+  return `${h}:${m}:${s}`;
+}
 function showAlreadyPlayed(result, stats){
   const app = document.getElementById('app');
   app.innerHTML = `
@@ -409,20 +462,38 @@ function showAlreadyPlayed(result, stats){
         <div class="streak-stat"><span class="num">${stats.played ? Math.round(100*stats.correct/stats.played) : 0}%</span><span class="lbl">accuracy</span></div>
       </div>
       <button class="share" id="shareBtnAgain">Copy result to share</button>
+      <div class="countdown" id="countdown">Next puzzle in ${nextPuzzleCountdown()}</div>
     </div>
   `;
   document.getElementById('shareBtnAgain').addEventListener('click', () => {
-    // reconstruct share text without re-showing which was picked visually
     const num = puzzleNumber(requestedDate);
-    const text = `Spot the Fake #${num}\n${result.correct ? '🟩' : '🟥'}\nStreak: ${stats.streak}\nspotthefake.game`;
+    const text = `Spot the Fake #${num}\n${result.correct ? '🟩' : '🟥'}\nStreak: ${stats.streak}\n${SITE_URL}`;
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('shareBtnAgain');
       btn.textContent = 'Copied!';
       setTimeout(() => { btn.textContent = 'Copy result to share'; }, 1500);
     });
   });
+  const countdownEl = document.getElementById('countdown');
+  setInterval(() => {
+    if (countdownEl) countdownEl.textContent = `Next puzzle in ${nextPuzzleCountdown()}`;
+  }, 1000);
 }
-
+function initHowTo(){
+  const backdrop = document.getElementById('howToBackdrop');
+  const closeX = document.getElementById('howToCloseX');
+  const gotItBtn = document.getElementById('howToGotIt');
+  const infoBtn = document.getElementById('infoBtn');
+  function open(){ backdrop.hidden = false; }
+  function close(){ backdrop.hidden = true; localStorage.setItem('spotthefake_seenHowTo', '1'); }
+  closeX.addEventListener('click', close);
+  gotItBtn.addEventListener('click', close);
+  infoBtn.addEventListener('click', open);
+  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !backdrop.hidden) close(); });
+  if (!localStorage.getItem('spotthefake_seenHowTo')) open();
+}
+initHowTo();
 loadPuzzle();
 </script>
 </body>
