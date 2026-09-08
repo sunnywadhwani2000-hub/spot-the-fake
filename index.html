@@ -105,7 +105,7 @@
     color: var(--ink-soft);
   }
   .streak{ font-variant-numeric: tabular-nums; font-weight: 600; }
-  .archive-row{ margin-top: 8px; }
+  .archive-row{ margin-top: 8px; display:flex; align-items:center; flex-wrap:wrap; }
   .link-btn{
     background:none;
     border:none;
@@ -118,6 +118,7 @@
     cursor:pointer;
   }
   .link-btn:hover{ color: var(--ink); }
+  .archive-sep{ margin:0 6px; color: var(--rule); font-size:12.5px; }
   .back-link{ display:inline-block; margin-bottom:14px; }
   .info-btn, .settings-btn{
     position:absolute;
@@ -442,6 +443,8 @@
     </div>
     <div class="archive-row">
       <button class="link-btn" id="archiveBtn">Browse past puzzles</button>
+      <span class="archive-sep">·</span>
+      <a class="link-btn" href="/firebreak.html">🔥 New: Try Firebreak</a>
     </div>
     <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙</button>
     <button class="info-btn" id="infoBtn" aria-label="How to play" title="How to play">?</button>
