@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spot the Fake</title>
-<meta name="description" content="Five headlines. Four are real. One never happened. A new daily puzzle every morning.">
+<meta name="description" content="Daily puzzles about spotting what's real. Classic: five headlines, one is fake. Firebreak: contain a claim before it spreads.">
 <meta property="og:title" content="Spot the Fake">
-<meta property="og:description" content="Five headlines. Four are real. One never happened. Can you spot it?">
+<meta property="og:description" content="Daily puzzles about spotting what's real. Can you tell?">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://spotthefake.org">
 <meta property="og:image" content="https://spotthefake.org/og-image.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spot the Fake">
-<meta name="twitter:description" content="Five headlines. Four are real. One never happened. Can you spot it?">
+<meta name="twitter:description" content="Daily puzzles about spotting what's real. Can you tell?">
 <meta name="twitter:image" content="https://spotthefake.org/og-image.png">
 <link rel="canonical" href="https://spotthefake.org/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23F2EEE4'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' font-family='Georgia,serif' fill='%23B23A1E'%3E%3F%3C/text%3E%3C/svg%3E">
@@ -22,7 +22,7 @@
   "@type": "WebApplication",
   "name": "Spot the Fake",
   "url": "https://spotthefake.org",
-  "description": "A daily headline puzzle: five headlines, four real and one fake. Spot the fake headline in under a minute, every day.",
+  "description": "A collection of daily puzzles about spotting what's real: Classic (find the fake headline) and Firebreak (contain a spreading claim).",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
   "offers": {
@@ -33,18 +33,58 @@
 }
 </script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
+
   :root{
     --paper: #F2EEE4;
     --paper-dim: #E7E1D2;
+    --paper-raised: #FFFFFF;
     --ink: #1C1A15;
     --ink-soft: #55503F;
+    --ink-faint: #8C8570;
     --rule: #CFC7AF;
     --alarm: #B23A1E;
     --alarm-soft: #E9D3C8;
     --ok: #3F6B4A;
     --ok-soft: #D8E4D3;
+    --fb-bg: #121417;
+    --fb-ink: #EDEFF2;
+    --fb-warn: #E0A73A;
+    --fb-spread: #D9482F;
+    --fb-safe: #3FA773;
+    --shadow: 0 1px 2px rgba(28,26,21,.05), 0 10px 26px -14px rgba(28,26,21,.22);
   }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper: #17140F;
+      --paper-dim: #241F17;
+      --paper-raised: #211D16;
+      --ink: #EEE8DA;
+      --ink-soft: #B4AB98;
+      --ink-faint: #7C7566;
+      --rule: #3A3327;
+      --alarm: #E2694A;
+      --alarm-soft: #3A251D;
+      --ok: #6FAE7C;
+      --ok-soft: #1F2E22;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 30px -16px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper: #17140F;
+    --paper-dim: #241F17;
+    --paper-raised: #211D16;
+    --ink: #EEE8DA;
+    --ink-soft: #B4AB98;
+    --ink-faint: #7C7566;
+    --rule: #3A3327;
+    --alarm: #E2694A;
+    --alarm-soft: #3A251D;
+    --ok: #6FAE7C;
+    --ok-soft: #1F2E22;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 30px -16px rgba(0,0,0,.6);
+  }
+
   *{ box-sizing: border-box; }
   body{
     margin:0;
@@ -56,839 +96,252 @@
     justify-content:center;
     padding: 40px 16px 80px;
   }
-  body[data-theme="dark"]{
-    --paper: #17140F;
-    --paper-dim: #241F17;
-    --ink: #EEE8DA;
-    --ink-soft: #B4AB98;
-    --rule: #3A3327;
-    --alarm: #E2694A;
-    --alarm-soft: #3A251D;
-    --ok: #6FAE7C;
-    --ok-soft: #1F2E22;
-  }
-  body[data-cb="1"]{
-    --ok: #2F6FB0;
-    --ok-soft: #D8E6F3;
-    --alarm: #B0722F;
-    --alarm-soft: #F3E6D8;
-  }
-  body[data-theme="dark"][data-cb="1"]{
-    --ok: #6FA8DC;
-    --ok-soft: #1C2A36;
-    --alarm: #D9A24A;
-    --alarm-soft: #34271A;
-  }
-  .wrap{ width: 100%; max-width: 640px; }
+  .wrap{ width: 100%; max-width: 720px; }
+
   header{
-    position: relative;
     text-align:left;
-    margin-bottom: 28px;
+    margin-bottom: 30px;
     border-bottom: 2px solid var(--ink);
     padding-bottom: 18px;
-    padding-right: 76px;
   }
   .masthead{
     font-family: 'Source Serif 4', serif;
     font-weight: 700;
-    font-size: 34px;
+    font-size: 36px;
     letter-spacing: -0.01em;
-    margin: 0;
+    margin: 0 0 6px;
   }
   .masthead em{ font-style: italic; color: var(--alarm); }
-  .dateline{
+  .kicker{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .stats-strip{
     display:flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--ink-soft);
+    gap: 10px;
+    margin-bottom: 28px;
   }
-  .streak{ font-variant-numeric: tabular-nums; font-weight: 600; }
-  .archive-row{ margin-top: 8px; display:flex; align-items:center; flex-wrap:wrap; }
-  .link-btn{
-    background:none;
-    border:none;
-    padding:0;
-    font-family:'Inter', sans-serif;
-    font-size:12.5px;
-    color: var(--ink-soft);
-    text-decoration: underline;
-    text-underline-offset:2px;
-    cursor:pointer;
+  .stats-strip .cell{
+    flex:1;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
   }
-  .link-btn:hover{ color: var(--ink); }
-  .archive-sep{ margin:0 6px; color: var(--rule); font-size:12.5px; }
-  .back-link{ display:inline-block; margin-bottom:14px; }
-  .info-btn, .settings-btn{
-    position:absolute;
-    top:0;
-    width:28px; height:28px;
-    border-radius:50%;
-    border:1px solid var(--rule);
-    background:var(--paper-dim);
-    color:var(--ink-soft);
+  .stats-strip .k{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+    color: var(--ink-faint); margin-bottom:3px;
+  }
+  .stats-strip .v{
+    font-family:'Source Serif 4', serif; font-size:22px; font-weight:700;
+  }
+
+  .section-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .games{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 34px;
+  }
+  @media (max-width: 560px){
+    .games{ grid-template-columns: 1fr; }
+  }
+
+  .game-card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    border-radius: 16px;
+    overflow:hidden;
+    text-decoration:none;
+    color:inherit;
+    border: 1px solid var(--rule);
+    box-shadow: var(--shadow);
+    background: var(--paper-raised);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .game-card:hover{ transform: translateY(-2px); }
+  .game-card:focus-visible{ outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  .card-preview{
+    height: 128px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card-body{
+    padding: 16px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    gap: 6px;
+    flex:1;
+  }
+  .card-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  }
+  .card-title{
     font-family:'Source Serif 4', serif;
-    font-size:14px;
-    line-height:1;
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
+    font-size: 21px; font-weight:700; margin:0;
   }
-  .info-btn{ right:0; }
-  .settings-btn{ right:38px; font-size:15px; }
-  .info-btn:hover, .settings-btn:hover{ border-color: var(--ink); color: var(--ink); }
-  .info-btn:focus-visible, .settings-btn:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; }
-  .prompt{
-    font-family: 'Source Serif 4', serif;
-    font-size: 15px;
-    color: var(--ink-soft);
-    margin: 0 0 20px;
-    line-height: 1.5;
+  .card-desc{
+    font-size: 13px; line-height:1.5; color: var(--ink-soft); margin:0;
   }
-  .headline-btn{
-    display:block;
-    width: 100%;
-    text-align: left;
+  .card-meta{
+    margin-top: auto;
+    padding-top: 10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11.5px; color: var(--ink-faint);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+
+  /* Classic preview: mini headline stack */
+  .classic-preview{
     background: var(--paper-dim);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 18px 20px;
-    margin-bottom: 10px;
-    font-family: 'Source Serif 4', serif;
-    font-size: 18px;
-    line-height: 1.4;
-    color: var(--ink);
-    cursor: pointer;
-    transition: border-color 0.15s ease, transform 0.1s ease;
-  }
-  .headline-btn:hover:not(:disabled){ border-color: var(--ink); transform: translateX(2px); }
-  .headline-btn:focus-visible{ outline: 2px solid var(--ink); outline-offset: 2px; }
-  .headline-btn:disabled{ cursor: default; }
-  .headline-btn .tag{
-    display:inline-block;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 2px;
-    margin-top: 10px;
-  }
-  .headline-btn.correct{ background: var(--ok-soft); border-color: var(--ok); }
-  .headline-btn.correct .tag{ background: var(--ok); color: var(--paper); }
-  .headline-btn.wrong-pick{ background: var(--alarm-soft); border-color: var(--alarm); }
-  .headline-btn.wrong-pick .tag{ background: var(--alarm); color: var(--paper); }
-  .headline-btn .note{
-    display:block;
-    margin-top: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    line-height: 1.55;
-    color: var(--ink-soft);
-    cursor: default;
-  }
-  .result{
-    margin-top: 22px;
-    padding: 18px 20px;
-    border-radius: 3px;
-    font-size: 14px;
-    line-height: 1.6;
-    display:none;
-  }
-  .result.show{ display:block; }
-  .result.win{ background: var(--ok-soft); border: 1px solid var(--ok); }
-  .result.lose{ background: var(--alarm-soft); border: 1px solid var(--alarm); }
-  .result h3{ margin: 0 0 6px; font-family: 'Source Serif 4', serif; font-size: 17px; }
-  .actions{ margin-top: 18px; display:flex; gap: 10px; flex-wrap: wrap; }
-  button.share, button.next{
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    background: var(--ink);
-    color: var(--paper);
-    border: none;
-    border-radius: 3px;
-    padding: 11px 18px;
-    cursor: pointer;
-  }
-  button.share{ background: transparent; color: var(--ink); border: 1px solid var(--ink); }
-  button.share:hover, button.next:hover{ opacity: 0.85; }
-  .already-played{
-    text-align:center;
-    padding: 50px 20px;
-  }
-  .already-played .score{
-    font-family: 'Source Serif 4', serif;
-    font-size: 44px;
-    font-weight: 700;
-    margin: 10px 0;
-  }
-  .already-played p{ color: var(--ink-soft); font-size: 14px; }
-  .countdown{
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-top: 18px;
-    font-variant-numeric: tabular-nums;
-  }
-  .streak-box{
-    display:flex;
-    gap: 14px;
-    margin: 20px 0;
-    padding: 16px 20px;
-    background: var(--paper-dim);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-  }
-  .streak-stat{ flex: 1; text-align: center; }
-  .streak-stat .num{
-    font-family: 'Source Serif 4', serif;
-    font-size: 26px;
-    font-weight: 700;
-    display:block;
-  }
-  .streak-stat .lbl{ font-size: 11px; color: var(--ink-soft); text-transform: none; }
-  .recap{
-    text-align:left;
-    margin-top: 26px;
-  }
-  .recap-toggle{
-    display:block;
-    width:100%;
-    text-align:center;
-    background: transparent;
-    border: 1px solid var(--rule);
-    color: var(--ink-soft);
-    font-family:'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 14px;
-    border-radius: 3px;
-    cursor: pointer;
-    margin-top: 26px;
-  }
-  .recap-toggle:hover{ border-color: var(--ink); color: var(--ink); }
-  .recap-item{
     padding: 14px 16px;
-    margin-bottom: 8px;
-    border-radius: 3px;
-    background: var(--paper-dim);
-    border: 1px solid var(--rule);
+    display:flex; flex-direction:column; gap:6px; justify-content:center; height:100%;
   }
-  .recap-item.correct{ background: var(--ok-soft); border-color: var(--ok); }
-  .recap-item.wrong-pick{ background: var(--alarm-soft); border-color: var(--alarm); }
-  .recap-item .headline{
-    font-family: 'Source Serif 4', serif;
-    font-size: 16px;
-    line-height: 1.4;
-    margin-bottom: 6px;
+  .classic-line{
+    height: 8px; border-radius: 3px; background: var(--rule);
   }
-  .recap-item .tag{
-    display:inline-block;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 2px;
-    margin-bottom: 8px;
+  .classic-line.fake{ background: var(--alarm); opacity:.55; width: 62%; }
+  .classic-preview .classic-line:nth-child(1){ width: 92%; }
+  .classic-preview .classic-line:nth-child(2){ width: 78%; }
+  .classic-preview .classic-line:nth-child(3){ width: 88%; }
+  .classic-preview .classic-line:nth-child(4){ width: 70%; }
+  .card-eyebrow.classic{ color: var(--alarm); }
+
+  /* Firebreak preview: mini network */
+  .firebreak-preview{
+    background: var(--fb-bg);
+    height: 100%;
+    position:relative;
   }
-  .recap-item.correct .tag{ background: var(--ok); color: var(--paper); }
-  .recap-item.wrong-pick .tag{ background: var(--alarm); color: var(--paper); }
-  .recap-item .note{
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    line-height: 1.55;
-    color: var(--ink-soft);
-  }
-  .loading, .error{
-    padding: 40px 20px;
-    text-align: center;
-    color: var(--ink-soft);
-    font-size: 14px;
-  }
-  footer{
-    margin-top: 40px;
+  .card-eyebrow.firebreak{ color: var(--fb-warn); }
+
+  .hub-footer{
     font-size: 12px;
-    color: var(--ink-soft);
-    line-height: 1.6;
+    color: var(--ink-faint);
+    text-align:center;
+    line-height:1.6;
     border-top: 1px solid var(--rule);
     padding-top: 16px;
+    margin-top: 12px;
   }
-  .archive-list{ display:flex; flex-direction:column; gap:8px; }
-  .archive-item{
-    display:flex;
-    justify-content:space-between;
-    padding:12px 16px;
-    background: var(--paper-dim);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    color: var(--ink);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .archive-item:hover{ border-color: var(--ink); }
-  .modal-backdrop{
-    position: fixed; inset: 0;
-    background: rgba(28,26,21,0.55);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-    z-index: 100;
-  }
-  .modal-backdrop[hidden]{ display: none; }
-  .modal{
-    background: var(--paper);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 30px 26px 26px;
-    max-width: 380px;
-    width: 100%;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.2);
-    position: relative;
-  }
-  .modal h2{
-    font-family: 'Source Serif 4', serif;
-    font-size: 22px;
-    margin: 0 0 16px;
-  }
-  .howto-list{
-    margin: 0 0 22px;
-    padding-left: 20px;
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: var(--ink-soft);
-  }
-  .howto-list li{ margin-bottom: 9px; }
-  .howto-list li:last-child{ margin-bottom: 0; }
-  .howto-list strong{ color: var(--ink); }
-  .modal-close{
-    position: absolute;
-    top: 12px; right: 12px;
-    width: 28px; height: 28px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    line-height: 1;
-    color: var(--ink-soft);
-    cursor: pointer;
-  }
-  .modal-close:hover{ color: var(--ink); }
-  .modal button.next{ width: 100%; text-align: center; }
-  @media (prefers-reduced-motion: no-preference){
-    .modal{ animation: modal-in 0.15s ease-out; }
-  }
-  @keyframes modal-in{
-    from{ opacity: 0; transform: translateY(6px); }
-    to{ opacity: 1; transform: translateY(0); }
-  }
-  .settings-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 0;
-    border-bottom:1px solid var(--rule);
-    font-size:14.5px;
-  }
-  .settings-row:last-child{ border-bottom:none; }
-  .toggle{
-    width:42px; height:24px;
-    border-radius:20px;
-    border:1px solid var(--rule);
-    background:var(--paper-dim);
-    position:relative;
-    cursor:pointer;
-    padding:0;
-    flex:none;
-  }
-  .toggle::after{
-    content:'';
-    position:absolute;
-    top:2px; left:2px;
-    width:18px; height:18px;
-    border-radius:50%;
-    background:var(--ink-soft);
-    transition:transform 0.15s ease;
-  }
-  .toggle[aria-checked="true"]{ background:var(--ink); border-color:var(--ink); }
-  .toggle[aria-checked="true"]::after{ transform:translateX(18px); background:var(--paper); }
-  .milestone-toast{
-    position: fixed;
-    left:50%;
-    top:20px;
-    transform: translateX(-50%) translateY(-16px);
-    background: var(--ink);
-    color: var(--paper);
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-family:'Inter', sans-serif;
-    font-size:14px;
-    font-weight:600;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-    z-index: 200;
-    opacity:0;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    pointer-events:none;
-  }
-  .milestone-toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
-  @media (prefers-reduced-motion: reduce){
-    .milestone-toast{ transition:none; }
-  }
+  .hub-footer a{ color: var(--ink-soft); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1 class="masthead">Spot the <em>Fake</em></h1>
-    <div class="dateline">
-      <span id="puzzleLabel">Loading puzzle…</span>
-      <span class="streak" id="streakLabel"></span>
-    </div>
-    <div class="archive-row">
-      <button class="link-btn" id="archiveBtn">Browse past puzzles</button>
-      <span class="archive-sep">·</span>
-      <a class="link-btn" href="/firebreak.html">🔥 New: Try Firebreak</a>
-    </div>
-    <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙</button>
-    <button class="info-btn" id="infoBtn" aria-label="How to play" title="How to play">?</button>
+    <span class="kicker">Daily puzzles built on the same idea — can you tell what's real?</span>
   </header>
-  <div id="app">
-    <div class="loading">Fetching today's headlines…</div>
+
+  <div class="stats-strip">
+    <div class="cell"><div class="k">Classic streak</div><div class="v" id="classicStreak">—</div></div>
+    <div class="cell"><div class="k">Firebreak rating</div><div class="v" id="firebreakRating">—</div></div>
+    <div class="cell"><div class="k">Today's puzzle</div><div class="v" id="puzzleNum" style="font-size:16px;">—</div></div>
   </div>
-  <footer>
-    A new set every day. Everyone gets the same five headlines.
-  </footer>
-</div>
-<div class="modal-backdrop" id="howToBackdrop" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="howToTitle">
-    <button class="modal-close" id="howToCloseX" aria-label="Close">&times;</button>
-    <h2 id="howToTitle">How to play</h2>
-    <ol class="howto-list">
-      <li><strong>Four headlines are real</strong> — genuine news from the past week.</li>
-      <li><strong>One is invented</strong> — written to blend right in.</li>
-      <li>Pick the fake. <strong>One guess</strong>, once a day. A new set posts every morning.</li>
-    </ol>
-    <button class="next" id="howToGotIt">Got it</button>
+
+  <p class="section-label">Play</p>
+  <div class="games">
+    <a class="game-card" href="/classic.html">
+      <div class="card-preview">
+        <div class="classic-preview">
+          <div class="classic-line"></div>
+          <div class="classic-line"></div>
+          <div class="classic-line fake"></div>
+          <div class="classic-line"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <span class="card-eyebrow classic">Daily · ~30 seconds</span>
+        <h2 class="card-title">Classic</h2>
+        <p class="card-desc">Five headlines. Four are real. One never happened. Pick the fake.</p>
+        <div class="card-meta"><span id="classicPuzzleMeta">Today's puzzle</span><span id="classicStreakMeta">—</span></div>
+      </div>
+    </a>
+
+    <a class="game-card" href="/firebreak.html">
+      <div class="card-preview">
+        <svg class="firebreak-preview" viewBox="0 0 200 128" preserveAspectRatio="xMidYMid slice">
+          <rect width="200" height="128" fill="#121417"/>
+          <line x1="40" y1="64" x2="80" y2="30" stroke="#3A424C" stroke-width="2"/>
+          <line x1="40" y1="64" x2="80" y2="95" stroke="#3A424C" stroke-width="2"/>
+          <line x1="80" y1="30" x2="130" y2="20" stroke="#D9482F" stroke-width="2.5"/>
+          <line x1="80" y1="30" x2="120" y2="55" stroke="#3A424C" stroke-width="2"/>
+          <line x1="80" y1="95" x2="125" y2="100" stroke="#3A424C" stroke-width="2"/>
+          <line x1="120" y1="55" x2="160" y2="45" stroke="#3A424C" stroke-width="2"/>
+          <line x1="120" y1="55" x2="155" y2="80" stroke="#3A424C" stroke-width="2"/>
+          <circle cx="40" cy="64" r="6" fill="#D9482F"/>
+          <circle cx="80" cy="30" r="5" fill="#D9482F"/>
+          <circle cx="80" cy="95" r="5" fill="#3FA773"/>
+          <circle cx="130" cy="20" r="5" fill="#3A424C" stroke="#E0A73A" stroke-width="2"/>
+          <circle cx="120" cy="55" r="5" fill="#3A424C"/>
+          <circle cx="125" cy="100" r="5" fill="#3A424C"/>
+          <circle cx="160" cy="45" r="5" fill="#3A424C"/>
+          <circle cx="155" cy="80" r="5" fill="#3A424C"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-eyebrow firebreak">New · Endless levels</span>
+        <h2 class="card-title">Firebreak</h2>
+        <p class="card-desc">A claim just went live. Verify nodes to contain it before it spreads through the whole network.</p>
+        <div class="card-meta"><span id="firebreakLevelMeta">Level 1</span><span id="firebreakRatingMeta">—</span></div>
+      </div>
+    </a>
   </div>
-</div>
-<div class="modal-backdrop" id="settingsBackdrop" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-    <button class="modal-close" id="settingsCloseX" aria-label="Close">&times;</button>
-    <h2 id="settingsTitle">Settings</h2>
-    <div class="settings-row">
-      <span>Dark mode</span>
-      <button class="toggle" id="darkModeToggle" role="switch" aria-checked="false" aria-label="Toggle dark mode"></button>
-    </div>
-    <div class="settings-row">
-      <span>Colorblind-safe colors</span>
-      <button class="toggle" id="cbModeToggle" role="switch" aria-checked="false" aria-label="Toggle colorblind-safe colors"></button>
-    </div>
+
+  <div class="hub-footer">
+    New puzzles every day. Your progress in each game is saved on this device.
   </div>
 </div>
 <script>
-// ============================================================
-// CONFIG
-// ============================================================
-// Sheet columns: date, h1-h5, fakeIndex, explanation, note1-note5
-// (note1-note5 are optional — each is a short "what actually happened"
-// blurb for that headline, shown to the reader after they guess. If a
-// note column is missing or blank for a given puzzle, that headline
-// just shows no recap line, so this degrades gracefully on older rows.)
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeCAj9Lc5fdjwEfQoLkPSkwnAu4Q1cKFEnkwmpdW1e0P1YAGGHwYCCKok3vBvt-tM4Oxc2q6HkSRRu/pub?output=csv";
-const LAUNCH_DATE = "2026-09-06";
-const SITE_URL = "spotthefake.org";
-// ============================================================
-const params = new URLSearchParams(window.location.search);
-const requestedDate = params.get('date') || todayStr();
-let cachedHeader = null;
-let cachedRows = null;
-function todayStr(){
-  const d = new Date();
-  return d.toISOString().slice(0,10);
-}
-function puzzleNumber(dateStr){
-  const start = new Date(LAUNCH_DATE);
-  const cur = new Date(dateStr);
-  const diff = Math.round((cur - start) / 86400000) + 1;
-  return diff > 0 ? diff : 1;
-}
-function storageKey(dateStr){ return `spotthefake_${dateStr}`; }
-function getStats(){
-  const raw = localStorage.getItem('spotthefake_stats');
-  return raw ? JSON.parse(raw) : { streak: 0, played: 0, correct: 0, lastPlayedDate: null };
-}
-function saveStats(stats){
-  localStorage.setItem('spotthefake_stats', JSON.stringify(stats));
-}
-function backToTodayHtml(){
-  return requestedDate !== todayStr()
-    ? `<a class="link-btn back-link" href="?">← Back to today</a>`
-    : '';
-}
-function esc(s){
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : s;
-  return d.innerHTML;
-}
-function doShare(text, btnEl){
-  function flashCopied(){
-    const original = btnEl.textContent;
-    btnEl.textContent = 'Copied!';
-    setTimeout(() => { btnEl.textContent = original; }, 1500);
+(function(){
+  // Classic stats — same LAUNCH_DATE/keys as classic.html
+  const LAUNCH_DATE = "2026-09-06";
+  function todayStr(){ return new Date().toISOString().slice(0,10); }
+  function puzzleNumber(dateStr){
+    const start = new Date(LAUNCH_DATE);
+    const cur = new Date(dateStr);
+    const diff = Math.round((cur - start) / 86400000) + 1;
+    return diff > 0 ? diff : 1;
   }
-  function fallbackCopy(){
-    try{
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.left = '-9999px';
-      document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
-      const ok = document.execCommand('copy');
-      document.body.removeChild(ta);
-      if (ok) flashCopied();
-      else window.prompt('Copy your result:', text);
-    } catch(e){
-      window.prompt('Copy your result:', text);
-    }
-  }
-  if (navigator.share){
-    navigator.share({ text }).catch(fallbackCopy);
-    return;
-  }
-  if (navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(flashCopied).catch(fallbackCopy);
-  } else {
-    fallbackCopy();
-  }
-}
-function maybeShowMilestone(streak){
-  const milestones = [7, 30, 100];
-  if (!milestones.includes(streak)) return;
-  const seenKey = `spotthefake_milestone_${streak}`;
-  if (localStorage.getItem(seenKey)) return;
-  localStorage.setItem(seenKey, '1');
-  const toast = document.createElement('div');
-  toast.className = 'milestone-toast';
-  toast.textContent = `🔥 ${streak}-day streak!`;
-  document.body.appendChild(toast);
-  requestAnimationFrame(() => toast.classList.add('show'));
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
-}
-function parseCSV(text){
-  const rows = [];
-  let row = [], field = '', inQuotes = false;
-  for (let i = 0; i < text.length; i++){
-    const c = text[i];
-    if (inQuotes){
-      if (c === '"' && text[i+1] === '"'){ field += '"'; i++; }
-      else if (c === '"'){ inQuotes = false; }
-      else field += c;
-    } else {
-      if (c === '"') inQuotes = true;
-      else if (c === ','){ row.push(field); field=''; }
-      else if (c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
-      else if (c === '\r'){ /* skip */ }
-      else field += c;
-    }
-  }
-  if (field.length || row.length){ row.push(field); rows.push(row); }
-  return rows;
-}
-async function loadPuzzle(){
-  const app = document.getElementById('app');
-  const label = document.getElementById('puzzleLabel');
-  if (SHEET_CSV_URL.includes('REPLACE_WITH')){
-    app.innerHTML = `<div class="error">No puzzle source configured yet — paste your published Google Sheet CSV URL into SHEET_CSV_URL at the top of the script.</div>`;
-    return;
-  }
-  try {
-    const res = await fetch(SHEET_CSV_URL);
-    const text = await res.text();
-    const rows = parseCSV(text);
-    const header = rows[0].map(h => h.trim().toLowerCase());
-    cachedHeader = header;
-    cachedRows = rows.slice(1);
-    const dateIdx = header.indexOf('date');
-    const dataRows = cachedRows.filter(r => r[dateIdx] === requestedDate);
-    if (!dataRows.length){
-      app.innerHTML = `${backToTodayHtml()}<div class="error">No puzzle found for ${requestedDate} yet. Check back after this morning's email.</div>`;
-      return;
-    }
-    const r = dataRows[0];
-    const idx = name => header.indexOf(name);
-    const headlines = [r[idx('h1')], r[idx('h2')], r[idx('h3')], r[idx('h4')], r[idx('h5')]];
-    const fakeIndex = parseInt(r[idx('fakeindex')], 10);
-    const explanation = r[idx('explanation')];
-    const notes = [1,2,3,4,5].map(n => {
-      const i = idx('note' + n);
-      return i > -1 ? (r[i] || '').trim() : '';
-    });
-    label.textContent = `Spot the Fake #${puzzleNumber(requestedDate)}`;
-    renderGame(headlines, fakeIndex, explanation, notes);
-  } catch (e){
-    app.innerHTML = `<div class="error">Couldn't load today's puzzle. Check the sheet is published and the URL is correct.</div>`;
-  }
-}
-function renderGame(headlines, fakeIndex, explanation, notes){
-  const app = document.getElementById('app');
-  const stats = getStats();
-  const key = storageKey(requestedDate);
-  const already = localStorage.getItem(key);
-  updateStreakLabel(stats);
-  if (already){
-    const result = JSON.parse(already);
-    showAlreadyPlayed(result, stats, headlines, fakeIndex, notes);
-    return;
-  }
-  app.innerHTML = `
-    ${backToTodayHtml()}
-    <p class="prompt">Five headlines. One never happened. Pick the fake.</p>
-    <div id="game"></div>
-    <div class="result" id="result">
-      <h3 id="resultTitle"></h3>
-      <p id="resultBody"></p>
-      <div class="actions">
-        <button class="share" id="shareBtn">Share result</button>
-      </div>
-    </div>
-  `;
-  const gameEl = document.getElementById('game');
-  headlines.forEach((text, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'headline-btn';
-    btn.textContent = text;
-    btn.addEventListener('click', () => handleGuess(i, btn, headlines, fakeIndex, explanation, stats, notes));
-    gameEl.appendChild(btn);
-  });
-}
-function handleGuess(i, btnEl, headlines, fakeIndex, explanation, stats, notes){
-  const buttons = document.querySelectorAll('.headline-btn');
-  buttons.forEach(b => b.disabled = true);
-  const isCorrect = i === fakeIndex;
-  buttons[fakeIndex].classList.add(isCorrect ? 'correct' : 'wrong-pick');
-  const tag = document.createElement('span');
-  tag.className = 'tag';
-  tag.textContent = 'THE FAKE';
-  buttons[fakeIndex].appendChild(tag);
-  if (!isCorrect){
-    const wrongTag = document.createElement('span');
-    wrongTag.className = 'tag';
-    wrongTag.style.background = 'var(--ink-soft)';
-    wrongTag.style.color = 'var(--paper)';
-    wrongTag.textContent = 'YOUR PICK — ACTUALLY REAL';
-    btnEl.appendChild(wrongTag);
-  }
-  if (notes){
-    buttons.forEach((b, j) => {
-      const noteText = notes[j];
-      if (noteText){
-        const noteEl = document.createElement('span');
-        noteEl.className = 'note';
-        noteEl.textContent = noteText;
-        b.appendChild(noteEl);
-      }
-    });
-  }
-  const resultEl = document.getElementById('result');
-  resultEl.classList.add('show', isCorrect ? 'win' : 'lose');
-  document.getElementById('resultTitle').textContent = isCorrect ? 'Nice catch.' : 'That one was real.';
-  document.getElementById('resultBody').textContent = explanation;
-  stats.played += 1;
-  if (isCorrect){ stats.correct += 1; stats.streak += 1; }
-  else { stats.streak = 0; }
-  stats.lastPlayedDate = requestedDate;
-  saveStats(stats);
-  updateStreakLabel(stats);
-  if (isCorrect) maybeShowMilestone(stats.streak);
-  localStorage.setItem(storageKey(requestedDate), JSON.stringify({ picked: i, correct: isCorrect }));
-  document.getElementById('shareBtn').addEventListener('click', () => {
-    shareResult(i, fakeIndex, headlines.length, stats);
-  });
-}
-function updateStreakLabel(stats){
-  document.getElementById('streakLabel').textContent = `Streak: ${stats.streak}`;
-}
-function buildSquares(picked, fakeIndex, total){
-  let squares = '';
-  for (let i = 0; i < total; i++){
-    if (i === picked && i === fakeIndex) squares += '🟩';
-    else if (i === picked) squares += '🟥';
-    else squares += '⬛';
-  }
-  return squares;
-}
-function shareResult(picked, fakeIndex, total, stats){
-  const num = puzzleNumber(requestedDate);
-  const squares = buildSquares(picked, fakeIndex, total);
-  const text = `Spot the Fake #${num}\n${squares}\nStreak: ${stats.streak}\n${SITE_URL}`;
-  doShare(text, document.getElementById('shareBtn'));
-}
-function nextPuzzleCountdown(){
-  const now = new Date();
-  const midnight = new Date(now);
-  midnight.setHours(24,0,0,0);
-  const diff = midnight - now;
-  const h = String(Math.floor(diff / 3600000)).padStart(2,'0');
-  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
-  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
-  return `${h}:${m}:${s}`;
-}
-function buildRecapHtml(headlines, fakeIndex, picked, notes){
-  return headlines.map((text, i) => {
-    let cls = '';
-    let tagHtml = '';
-    if (i === fakeIndex){
-      cls = 'correct';
-      tagHtml = `<span class="tag">THE FAKE</span>`;
-    } else if (i === picked){
-      cls = 'wrong-pick';
-      tagHtml = `<span class="tag">YOUR PICK — ACTUALLY REAL</span>`;
-    }
-    const noteText = notes && notes[i];
-    const noteHtml = noteText ? `<div class="note">${esc(noteText)}</div>` : '';
-    return `<div class="recap-item ${cls}">${tagHtml}<div class="headline">${esc(text)}</div>${noteHtml}</div>`;
-  }).join('');
-}
-function showAlreadyPlayed(result, stats, headlines, fakeIndex, notes){
-  const app = document.getElementById('app');
-  const hasRecap = headlines && headlines.length;
-  app.innerHTML = `
-    ${backToTodayHtml()}
-    <div class="already-played">
-      <p>${result.correct ? "You caught it." : "It got past you."}</p>
-      <div class="score">${result.correct ? '✅' : '❌'}</div>
-      <div class="streak-box">
-        <div class="streak-stat"><span class="num">${stats.streak}</span><span class="lbl">current streak</span></div>
-        <div class="streak-stat"><span class="num">${stats.played}</span><span class="lbl">played</span></div>
-        <div class="streak-stat"><span class="num">${stats.played ? Math.round(100*stats.correct/stats.played) : 0}%</span><span class="lbl">accuracy</span></div>
-      </div>
-      <button class="share" id="shareBtnAgain">Share result</button>
-      ${requestedDate === todayStr() ? `<div class="countdown" id="countdown">Next puzzle in ${nextPuzzleCountdown()}</div>` : ''}
-      ${hasRecap ? `<button class="recap-toggle" id="recapToggle">What actually happened, headline by headline</button>
-      <div class="recap" id="recapList" hidden>${buildRecapHtml(headlines, fakeIndex, result.picked, notes)}</div>` : ''}
-    </div>
-  `;
-  document.getElementById('shareBtnAgain').addEventListener('click', () => {
-    const num = puzzleNumber(requestedDate);
-    const squares = hasRecap
-      ? buildSquares(result.picked, fakeIndex, headlines.length)
-      : (result.correct ? '🟩' : '🟥');
-    const text = `Spot the Fake #${num}\n${squares}\nStreak: ${stats.streak}\n${SITE_URL}`;
-    doShare(text, document.getElementById('shareBtnAgain'));
-  });
-  if (hasRecap){
-    const recapToggle = document.getElementById('recapToggle');
-    const recapList = document.getElementById('recapList');
-    recapToggle.addEventListener('click', () => {
-      const showing = !recapList.hidden;
-      recapList.hidden = showing;
-      recapToggle.textContent = showing ? 'What actually happened, headline by headline' : 'Hide recap';
-    });
-  }
-  const countdownEl = document.getElementById('countdown');
-  if (countdownEl){
-    setInterval(() => {
-      countdownEl.textContent = `Next puzzle in ${nextPuzzleCountdown()}`;
-    }, 1000);
-  }
-}
-async function showArchivePicker(){
-  const app = document.getElementById('app');
-  if (!cachedRows){
-    app.innerHTML = `<div class="loading">Loading archive…</div>`;
-    try {
-      const res = await fetch(SHEET_CSV_URL);
-      const text = await res.text();
-      const rows = parseCSV(text);
-      cachedHeader = rows[0].map(h => h.trim().toLowerCase());
-      cachedRows = rows.slice(1);
-    } catch (e){
-      app.innerHTML = `<div class="error">Couldn't load the archive.</div>`;
-      return;
-    }
-  }
-  const dateIdx = cachedHeader.indexOf('date');
-  const today = todayStr();
-  const dates = cachedRows
-    .map(r => r[dateIdx])
-    .filter(d => d && d <= today)
-    .sort()
-    .reverse();
-  const items = dates.map(d => {
-    const num = puzzleNumber(d);
-    const played = localStorage.getItem(storageKey(d));
-    let status = '';
-    if (played){
-      const r = JSON.parse(played);
-      status = r.correct ? '✅' : '❌';
-    }
-    return `<a class="archive-item" href="?date=${d}"><span>#${num} · ${d}</span><span>${status}</span></a>`;
-  }).join('');
-  app.innerHTML = `
-    <a class="link-btn back-link" href="?">← Back to today</a>
-    <p class="prompt">Past puzzles. Pick a day.</p>
-    <div class="archive-list">${items || '<p class="loading">No past puzzles yet.</p>'}</div>
-  `;
-}
-function initHowTo(){
-  const backdrop = document.getElementById('howToBackdrop');
-  const closeX = document.getElementById('howToCloseX');
-  const gotItBtn = document.getElementById('howToGotIt');
-  const infoBtn = document.getElementById('infoBtn');
-  function open(){ backdrop.hidden = false; }
-  function close(){ backdrop.hidden = true; localStorage.setItem('spotthefake_seenHowTo', '1'); }
-  closeX.addEventListener('click', close);
-  gotItBtn.addEventListener('click', close);
-  infoBtn.addEventListener('click', open);
-  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !backdrop.hidden) close(); });
-  if (!localStorage.getItem('spotthefake_seenHowTo')) open();
-}
-function initSettings(){
-  const backdrop = document.getElementById('settingsBackdrop');
-  const closeX = document.getElementById('settingsCloseX');
-  const settingsBtn = document.getElementById('settingsBtn');
-  const darkToggle = document.getElementById('darkModeToggle');
-  const cbToggle = document.getElementById('cbModeToggle');
-  function applyDark(on){
-    if (on) document.body.setAttribute('data-theme', 'dark');
-    else document.body.removeAttribute('data-theme');
-  }
-  function applyCb(on){
-    if (on) document.body.setAttribute('data-cb', '1');
-    else document.body.removeAttribute('data-cb');
-  }
-  const darkOn = localStorage.getItem('spotthefake_dark') === '1';
-  const cbOn = localStorage.getItem('spotthefake_cb') === '1';
-  applyDark(darkOn);
-  applyCb(cbOn);
-  darkToggle.setAttribute('aria-checked', String(darkOn));
-  cbToggle.setAttribute('aria-checked', String(cbOn));
-  function open(){ backdrop.hidden = false; }
-  function close(){ backdrop.hidden = true; }
-  settingsBtn.addEventListener('click', open);
-  closeX.addEventListener('click', close);
-  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !backdrop.hidden) close(); });
-  darkToggle.addEventListener('click', () => {
-    const now = darkToggle.getAttribute('aria-checked') !== 'true';
-    darkToggle.setAttribute('aria-checked', String(now));
-    localStorage.setItem('spotthefake_dark', now ? '1' : '0');
-    applyDark(now);
-  });
-  cbToggle.addEventListener('click', () => {
-    const now = cbToggle.getAttribute('aria-checked') !== 'true';
-    cbToggle.setAttribute('aria-checked', String(now));
-    localStorage.setItem('spotthefake_cb', now ? '1' : '0');
-    applyCb(now);
-  });
-}
-document.getElementById('archiveBtn').addEventListener('click', showArchivePicker);
-initHowTo();
-initSettings();
-loadPuzzle();
+  try{
+    const num = puzzleNumber(todayStr());
+    document.getElementById('puzzleNum').textContent = '#' + num;
+    document.getElementById('classicPuzzleMeta').textContent = 'Puzzle #' + num;
+    const rawStats = localStorage.getItem('spotthefake_stats');
+    const stats = rawStats ? JSON.parse(rawStats) : null;
+    const streak = stats ? stats.streak : 0;
+    document.getElementById('classicStreak').textContent = streak;
+    document.getElementById('classicStreakMeta').textContent = 'Streak: ' + streak;
+  }catch(e){ /* best-effort, defaults already shown */ }
+
+  // Firebreak stats
+  try{
+    const rawFb = localStorage.getItem('firebreak_save_v1');
+    const fb = rawFb ? JSON.parse(rawFb) : null;
+    const rating = fb && typeof fb.rating === 'number' ? fb.rating : 1000;
+    const level = fb && fb.level ? fb.level : 1;
+    document.getElementById('firebreakRating').textContent = rating;
+    document.getElementById('firebreakRatingMeta').textContent = 'Rating: ' + rating;
+    document.getElementById('firebreakLevelMeta').textContent = 'Level ' + level;
+  }catch(e){ /* best-effort, defaults already shown */ }
+})();
 </script>
 </body>
 </html>
