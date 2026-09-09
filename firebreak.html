@@ -158,11 +158,10 @@
   </div>
 
   <div class="actions">
-    <button class="btn-primary" id="advanceBtn">Advance turn</button>
     <button class="btn-ghost" id="resetBtn">New network (same level)</button>
     <button class="btn-ghost" id="demoBtn">▶ Watch a demo solve</button>
   </div>
-  <p class="hint" id="hint">Click a node to arm it (it turns amber and pulses) — click again to unarm. Then hit "Advance turn."</p>
+  <p class="hint" id="hint">Click a node to verify it and advance the turn.</p>
 
   <div class="reveal" id="reveal">
     <div class="score-banner">
@@ -323,7 +322,6 @@
   const ratingCountEl = document.getElementById('ratingCount');
   const turnCountEl = document.getElementById('turnCount');
   const infCountEl = document.getElementById('infCount');
-  const advanceBtn = document.getElementById('advanceBtn');
   const resetBtn = document.getElementById('resetBtn');
   const demoBtn = document.getElementById('demoBtn');
   const nextLevelBtn = document.getElementById('nextLevelBtn');
@@ -369,11 +367,8 @@
         if(gameOver || demoRunning) return;
         const id = g.dataset.id;
         if(state[id] !== 'idle') return;
-        pendingProtect = (pendingProtect === id) ? null : id;
-        render();
-        hint.textContent = pendingProtect
-          ? 'Armed — click "Advance turn" to lock it in, or click the node again to change your mind.'
-          : 'Click a node to arm it (it turns amber and pulses) — click again to unarm. Then hit "Advance turn."';
+        pendingProtect = id;
+        doAdvanceTurn();
       });
     });
 
@@ -401,19 +396,17 @@
       endLevel();
       return true;
     } else if(!demoRunning){
-      hint.textContent = 'Click a node to arm it (it turns amber and pulses) — click again to unarm. Then hit "Advance turn."';
+      hint.textContent = 'Click a node to verify it and advance the turn.';
     }
     writeSave();
     return false;
   }
 
-  advanceBtn.addEventListener('click', ()=>{ if(!demoRunning) doAdvanceTurn(); });
-
   function sleep(ms){ return new Promise(res=>setTimeout(res, ms)); }
 
   async function runDemo(){
     demoRunning = true;
-    advanceBtn.disabled = true; resetBtn.disabled = true; demoBtn.disabled = true;
+    resetBtn.disabled = true; demoBtn.disabled = true;
     Object.keys(G.nodes).forEach(id=>state[id]='idle');
     G.origins.forEach(o=> state[o]='infected');
     turn = 0; pendingProtect = null; gameOver = false;
@@ -437,7 +430,7 @@
       if(done) break;
     }
     demoRunning = false;
-    advanceBtn.disabled = false; resetBtn.disabled = false; demoBtn.disabled = false;
+    resetBtn.disabled = false; demoBtn.disabled = false;
   }
   demoBtn.addEventListener('click', ()=>{ if(!demoRunning) runDemo(); });
 
@@ -465,7 +458,6 @@
       `<b>${r.saved} of ${G.total} nodes saved (${r.pctSaved}%).</b> The highest-leverage move is usually the node with the most idle neighbors, not the node closest to the fire — blocking one busy junction saves more ground than chasing the nearest flame.`;
     reveal.classList.add('show');
     hint.textContent = 'Contained — see result below.';
-    advanceBtn.disabled = true;
     reveal.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 
@@ -494,8 +486,7 @@
     G.origins.forEach(o=> state[o]='infected');
     turn = 0; pendingProtect = null; gameOver = false;
     reveal.classList.remove('show');
-    advanceBtn.disabled = false;
-    hint.textContent = 'Click a node to arm it (it turns amber and pulses) — click again to unarm. Then hit "Advance turn."';
+    hint.textContent = 'Click a node to verify it and advance the turn.';
     render();
     writeSave();
   }
